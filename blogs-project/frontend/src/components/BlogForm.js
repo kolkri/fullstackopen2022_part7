@@ -1,7 +1,6 @@
 import { useState } from 'react'
 
 const BlogForm = ({ createBlog }) => {
-
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
@@ -11,26 +10,25 @@ const BlogForm = ({ createBlog }) => {
     const blogObject = {
       title: title,
       author: author,
-      url: url
+      url: url,
     }
     createBlog(blogObject)
     setTitle('')
     setAuthor('')
     setUrl('')
-
   }
 
-  return(
+  return (
     <div>
       <h2>Add new blog:</h2>
       <form onSubmit={addBlog}>
         <div>
           title:
           <input
-            id="title"
-            type="text"
+            id='title'
+            type='text'
             value={title}
-            name="title"
+            name='title'
             placeholder='write here blog title'
             onChange={(e) => setTitle(e.target.value)}
           />
@@ -38,24 +36,24 @@ const BlogForm = ({ createBlog }) => {
         <div>
           author:
           <input
-            id="author"
-            type="text"
+            id='author'
+            type='text'
             value={author}
-            name="author"
+            name='author'
             onChange={(e) => setAuthor(e.target.value)}
           />
         </div>
         <div>
           url:
           <input
-            id="url"
-            type="text"
+            id='url'
+            type='text'
             value={url}
-            name="url"
+            name='url'
             onChange={(e) => setUrl(e.target.value)}
           />
         </div>
-        <button type="submit">create</button>
+        <button type='submit'>create</button>
       </form>
     </div>
   )
