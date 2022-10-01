@@ -1,17 +1,19 @@
 import { useState } from 'react'
 import blogService from '../services/blogs'
+import { setNotification } from '../reducers/notificationReducer'
+import { useDispatch } from 'react-redux'
 
 const Blog = ({
   blog,
   setBlogs,
   blogs,
-  setErrorMessage,
   user,
   likeCallback,
 }) => {
   // const label = blog.important
   //   ? 'make not important' : 'make important'
 
+  const dispatch = useDispatch()
   const removeButton = {
     width: 'fit-content',
   }
@@ -59,15 +61,17 @@ const Blog = ({
         blogService.setToken(user.token)
         await blogService.remove(blog.id)
         setBlogs(blogs.filter((b) => b.id !== blog.id))
-        setErrorMessage(`blog ${blog.title} removed`)
-        setTimeout(() => {
-          setErrorMessage(null)
-        }, 5000)
+        // setErrorMessage(`blog ${blog.title} removed`)
+        // setTimeout(() => {
+        //   setErrorMessage(null)
+        // }, 5000)
+        dispatch(setNotification(`blog ${blog.title} removed`, 3))
       } catch (error) {
-        setErrorMessage(error.response.data.error)
-        setTimeout(() => {
-          setErrorMessage(null)
-        }, 5000)
+        // setErrorMessage(error.response.data.error)
+        // setTimeout(() => {
+        //   setErrorMessage(null)
+        // }, 5000)
+        dispatch(setNotification(error.response.data.error, 3))
       }
     }
   }

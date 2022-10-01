@@ -1,4 +1,7 @@
 import { useState, useEffect } from 'react'
+import { setNotification } from './reducers/notificationReducer'
+import { useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 
 import Blog from './components/Blog'
 import Notification from './components/Notification'
@@ -9,10 +12,16 @@ import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
+
+
+
 const App = () => {
+  const dispatch = useDispatch()
+
   const [blogs, setBlogs] = useState([])
   // const [showAll, setShowAll] = useState(true)
-  const [errorMessage, setErrorMessage] = useState(null)
+  // const [errorMessage, setErrorMessage] = useState(null)
+  const errorMessage = useSelector(state => state.notification)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -43,10 +52,11 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (error) {
-      setErrorMessage(error.response.data.error)
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      // setErrorMessage(error.response.data.error)
+      // setTimeout(() => {
+      //   setErrorMessage(null)
+      // }, 5000)
+      dispatch(setNotification(error.response.data.error, 3))
     }
   }
 
@@ -61,34 +71,38 @@ const App = () => {
       blogService.setToken(user.token)
       const returnedBlog = await blogService.create(blogObject)
       setBlogs(blogs.concat(returnedBlog))
-      setErrorMessage(
-        `a new blog ${blogObject.title} by ${blogObject.author} added`
-      )
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      // setErrorMessage(
+      //   `a new blog ${blogObject.title} by ${blogObject.author} added`
+      // )
+      // setTimeout(() => {
+      //   setErrorMessage(null)
+      // }, 5000)
+      dispatch(setNotification(`a new blog ${blogObject.title} by ${blogObject.author} added`, 3))
       blogService.getAll().then((blogs) => setBlogs(blogs))
     } catch (error) {
-      setErrorMessage(error.response.data.error)
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      // setErrorMessage(error.response.data.error)
+      // setTimeout(() => {
+      //   setErrorMessage(null)
+      // }, 5000)
+      dispatch(setNotification(error.response.data.error, 3))
     }
   }
 
   const like = async (id, blog) => {
     try {
       await blogService.update(id, blog)
-      setErrorMessage(`new like for ${blog.title} added`)
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      // setErrorMessage(`new like for ${blog.title} added`)
+      // setTimeout(() => {
+      //   setErrorMessage(null)
+      // }, 5000)
+      dispatch(setNotification(`new like for ${blog.title} added`, 3))
       blogService.getAll().then((blogs) => setBlogs(blogs))
     } catch (error) {
-      setErrorMessage(error.response.data.error)
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
+      // setErrorMessage(error.response.data.error)
+      // setTimeout(() => {
+      //   setErrorMessage(null)
+      // }, 5000)
+      dispatch(setNotification(error.response.data.error, 3))
     }
   }
 
@@ -131,7 +145,6 @@ const App = () => {
             blog={blog}
             setBlogs={setBlogs}
             blogs={blogs}
-            setErrorMessage={setErrorMessage}
             user={user}
             likeCallback={like}
           />
