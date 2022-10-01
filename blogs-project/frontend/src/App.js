@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { setNotification } from './reducers/notificationReducer'
-import { initializeBlogs, addblog } from './reducers/blogReducer'
+import { initializeBlogs, addblog, votedblog } from './reducers/blogReducer'
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
 
@@ -23,7 +23,6 @@ const App = () => {
   // const [showAll, setShowAll] = useState(true)
   // const [errorMessage, setErrorMessage] = useState(null)
   const blogs = useSelector(state => state.blogs)
-  console.log('blogs', blogs)
   const errorMessage = useSelector(state => state.notification)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -76,7 +75,6 @@ const App = () => {
       blogService.setToken(user.token)
       // const returnedBlog = await blogService.create(blogObject)
       // setBlogs(blogs.concat(returnedBlog))
-      console.log('oject', blogObject)
       await dispatch(addblog(blogObject))
       dispatch(initializeBlogs())
 
@@ -99,7 +97,8 @@ const App = () => {
 
   const like = async (id, blog) => {
     try {
-      await blogService.update(id, blog)
+      // await blogService.update(id, blog)
+      dispatch(votedblog(id, blog))
       // setErrorMessage(`new like for ${blog.title} added`)
       // setTimeout(() => {
       //   setErrorMessage(null)

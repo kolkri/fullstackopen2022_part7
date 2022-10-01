@@ -2,6 +2,7 @@ import { useState } from 'react'
 import blogService from '../services/blogs'
 import { setNotification } from '../reducers/notificationReducer'
 import { useDispatch } from 'react-redux'
+import { removeB } from '../reducers/blogReducer'
 
 
 
@@ -21,7 +22,6 @@ const Blog = ({
   const [showDetails, setShowDetails] = useState(false)
   const [likes, setLikes] = useState(blog.likes)
 
-  console.log('user and blog', user, blog)
 
   const hideWhenVisible = {
     display: showDetails ? 'none' : 'flex',
@@ -61,7 +61,8 @@ const Blog = ({
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
       try {
         blogService.setToken(user.token)
-        await blogService.remove(blog.id)
+        // await blogService.remove(blog.id)
+        await dispatch(removeB(blog))
         // setBlogs(blogs.filter((b) => b.id !== blog.id))
         //KORVAAVA KOODI TAHAN
         // setErrorMessage(`blog ${blog.title} removed`)
