@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { setNotification } from './reducers/notificationReducer'
+import { initializeBlogs, addblog } from './reducers/blogReducer'
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
 
@@ -18,16 +19,20 @@ import loginService from './services/login'
 const App = () => {
   const dispatch = useDispatch()
 
-  const [blogs, setBlogs] = useState([])
+  // const [blogs, setBlogs] = useState([])
   // const [showAll, setShowAll] = useState(true)
   // const [errorMessage, setErrorMessage] = useState(null)
+  const blogs = useSelector(state => state.blogs)
+  console.log('blogs', blogs)
   const errorMessage = useSelector(state => state.notification)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
+
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
+    // blogService.getAll().then((blogs) => setBlogs(blogs))
+    dispatch(initializeBlogs())
   }, [])
 
   useEffect(() => {
@@ -69,8 +74,12 @@ const App = () => {
   const createBlog = async (blogObject) => {
     try {
       blogService.setToken(user.token)
-      const returnedBlog = await blogService.create(blogObject)
-      setBlogs(blogs.concat(returnedBlog))
+      // const returnedBlog = await blogService.create(blogObject)
+      // setBlogs(blogs.concat(returnedBlog))
+      console.log('oject', blogObject)
+      await dispatch(addblog(blogObject))
+      dispatch(initializeBlogs())
+
       // setErrorMessage(
       //   `a new blog ${blogObject.title} by ${blogObject.author} added`
       // )
@@ -78,7 +87,7 @@ const App = () => {
       //   setErrorMessage(null)
       // }, 5000)
       dispatch(setNotification(`a new blog ${blogObject.title} by ${blogObject.author} added`, 3))
-      blogService.getAll().then((blogs) => setBlogs(blogs))
+      // blogService.getAll().then((blogs) => setBlogs(blogs))
     } catch (error) {
       // setErrorMessage(error.response.data.error)
       // setTimeout(() => {
@@ -96,7 +105,8 @@ const App = () => {
       //   setErrorMessage(null)
       // }, 5000)
       dispatch(setNotification(`new like for ${blog.title} added`, 3))
-      blogService.getAll().then((blogs) => setBlogs(blogs))
+      // blogService.getAll().then((blogs) => setBlogs(blogs))
+      dispatch(initializeBlogs())
     } catch (error) {
       // setErrorMessage(error.response.data.error)
       // setTimeout(() => {
@@ -134,17 +144,15 @@ const App = () => {
         </button>
       </div>
       <Togglable buttonLabel='new blog'>
-        <BlogForm createBlog={createBlog} />
+        <BlogForm createBlog={createBlog}/>
       </Togglable>
       <h2>Blogs</h2>
-      {blogs
+      {[...blogs]
         .sort((a, b) => b.likes - a.likes)
         .map((blog) => (
           <Blog
             key={blog.id}
             blog={blog}
-            setBlogs={setBlogs}
-            blogs={blogs}
             user={user}
             likeCallback={like}
           />
