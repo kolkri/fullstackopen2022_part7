@@ -1,4 +1,3 @@
 node_modules
 cypress/videos/
 .prettierignore
-.DS_Store
