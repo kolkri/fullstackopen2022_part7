@@ -1,18 +1,24 @@
 import { useState, useEffect } from 'react'
 import { setNotification } from './reducers/notificationReducer'
-import { initializeBlogs, addblog, votedblog } from './reducers/blogReducer'
+import { initializeBlogs, addblog } from './reducers/blogReducer'
 import { putUser, emptyUser } from './reducers/userReducer'
-import { useSelector } from 'react-redux'
-import { useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 
-import Blog from './components/Blog'
+
+
+// import Blog from './components/Blog'
 import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
+import Users from './components/Users'
+import SingleBlog from './components/SingleBlog'
+import Blogs from './components/Blogs'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
+import SingleUser from './components/SingleUser'
 
 
 
@@ -23,7 +29,7 @@ const App = () => {
   // const [blogs, setBlogs] = useState([])
   // const [showAll, setShowAll] = useState(true)
   // const [errorMessage, setErrorMessage] = useState(null)
-  const blogs = useSelector(state => state.blogs)
+  // const blogs = useSelector(state => state.blogs)
   const errorMessage = useSelector(state => state.notification)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -101,25 +107,25 @@ const App = () => {
     }
   }
 
-  const like = async (id, blog) => {
-    try {
-      // await blogService.update(id, blog)
-      await dispatch(votedblog(id, blog))
-      // setErrorMessage(`new like for ${blog.title} added`)
-      // setTimeout(() => {
-      //   setErrorMessage(null)
-      // }, 5000)
-      dispatch(setNotification(`new like for ${blog.title} added`, 3))
-      // blogService.getAll().then((blogs) => setBlogs(blogs))
-      dispatch(initializeBlogs())
-    } catch (error) {
-      // setErrorMessage(error.response.data.error)
-      // setTimeout(() => {
-      //   setErrorMessage(null)
-      // }, 5000)
-      dispatch(setNotification(error.response.data.error, 3))
-    }
-  }
+  // const like = async (id, blog) => {
+  //   try {
+  //     // await blogService.update(id, blog)
+  //     await dispatch(votedblog(id, blog))
+  //     // setErrorMessage(`new like for ${blog.title} added`)
+  //     // setTimeout(() => {
+  //     //   setErrorMessage(null)
+  //     // }, 5000)
+  //     dispatch(setNotification(`new like for ${blog.title} added`, 3))
+  //     // blogService.getAll().then((blogs) => setBlogs(blogs))
+  //     dispatch(initializeBlogs())
+  //   } catch (error) {
+  //     // setErrorMessage(error.response.data.error)
+  //     // setTimeout(() => {
+  //     //   setErrorMessage(null)
+  //     // }, 5000)
+  //     dispatch(setNotification(error.response.data.error, 3))
+  //   }
+  // }
 
   if (user === null)
     return (
@@ -140,28 +146,39 @@ const App = () => {
 
   return (
     <div>
-      <h2>Welcome</h2>
-      {errorMessage && <Notification message={errorMessage} />}
-      <div>
-        {user.name} logged in{' '}
-        <button id='logout-button' onClick={handleLogout}>
-          log out
-        </button>
-      </div>
-      <Togglable buttonLabel='new blog'>
-        <BlogForm createBlog={createBlog}/>
-      </Togglable>
-      <h2>Blogs</h2>
-      {[...blogs]
-        .sort((a, b) => b.likes - a.likes)
-        .map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            user={user}
-            likeCallback={like}
-          />
-        ))}
+      <Router>
+        {errorMessage && <Notification message={errorMessage} />}
+        <div>
+          <Link to='/'>blogs</Link>
+          <Link to='/users'>users</Link>
+          {user.name} logged in{' '}
+          <button id='logout-button' onClick={handleLogout}>
+            log out
+          </button>
+        </div>
+        <Togglable buttonLabel='new blog'>
+          <BlogForm createBlog={createBlog}/>
+        </Togglable>
+        {/* <h2>Blogs</h2>
+        {[...blogs]
+          .sort((a, b) => b.likes - a.likes)
+          .map((blog) => (
+            <Blog
+              key={blog.id}
+              blog={blog}
+              user={user}
+              likeCallback={like}
+            />
+          )
+          )
+        } */}
+        <Routes>
+          <Route path='/' element={<Blogs />} />
+          <Route path='/users' element={<Users />} />
+          <Route path="/users/:id" element={<SingleUser />} />
+          <Route path="/blogs/:id" element={<SingleBlog />} />
+        </Routes >
+      </Router>
     </div>
   )
 }
