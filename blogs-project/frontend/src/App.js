@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { setNotification } from './reducers/notificationReducer'
 import { initializeBlogs, addblog, votedblog } from './reducers/blogReducer'
+import { putUser, emptyUser } from './reducers/userReducer'
 import { useSelector } from 'react-redux'
 import { useDispatch } from 'react-redux'
 
@@ -26,7 +27,8 @@ const App = () => {
   const errorMessage = useSelector(state => state.notification)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
+  // const [user, setUser] = useState(null)
+  const user = useSelector(state => state.user)
 
 
   useEffect(() => {
@@ -37,22 +39,25 @@ const App = () => {
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+      const userObject = JSON.parse(loggedUserJSON)
+      // setUser(user)
+      dispatch(putUser(userObject))
       blogService.setToken(user.Token)
     }
   }, [])
 
   const handleLogin = async (event) => {
     event.preventDefault()
+    console.log('states', username, password)
     try {
-      const user = await loginService.login({
+      const userObject = await loginService.login({
         username,
         password,
       })
-      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
-      blogService.setToken(user.token)
-      setUser(user)
+      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(userObject))
+      blogService.setToken(userObject.token)
+      // setUser(user)
+      dispatch(putUser(userObject))
       setUsername('')
       setPassword('')
     } catch (error) {
@@ -67,7 +72,8 @@ const App = () => {
   const handleLogout = (event) => {
     event.preventDefault()
     window.localStorage.clear()
-    setUser(null)
+    // setUser(null)
+    dispatch(emptyUser())
   }
 
   const createBlog = async (blogObject) => {
@@ -98,7 +104,7 @@ const App = () => {
   const like = async (id, blog) => {
     try {
       // await blogService.update(id, blog)
-      dispatch(votedblog(id, blog))
+      await dispatch(votedblog(id, blog))
       // setErrorMessage(`new like for ${blog.title} added`)
       // setTimeout(() => {
       //   setErrorMessage(null)
