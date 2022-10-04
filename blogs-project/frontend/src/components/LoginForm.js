@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types'
+import { Form, Button } from 'react-bootstrap'
 
 const LoginForm = ({
   handleLogin,
@@ -7,32 +8,39 @@ const LoginForm = ({
   password,
   setPassword,
 }) => {
+  const margin = {
+    margin: '10px 0'
+  }
   return (
-    <form onSubmit={handleLogin}>
-      <div>
-        username
-        <input
+    <Form onSubmit={handleLogin}>
+      <Form.Group>
+        <Form.Label>
+          username:
+        </Form.Label>
+        <Form.Control
           id='username'
           type='text'
           value={username}
           name='Username'
           onChange={({ target }) => setUsername(target.value)}
         />
-      </div>
-      <div>
-        password
-        <input
+      </Form.Group>
+      <Form.Group>
+        <Form.Label>
+          password:
+        </Form.Label>
+        <Form.Control
           id='password'
           type='password'
           value={password}
           name='Password'
           onChange={({ target }) => setPassword(target.value)}
         />
-      </div>
-      <button id='login-button' type='submit'>
+      </Form.Group>
+      <Button style={margin} id='login-Button' type='submit'>
         login
-      </button>
-    </form>
+      </Button>
+    </Form>
   )
 }
 

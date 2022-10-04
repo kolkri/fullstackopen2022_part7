@@ -4,6 +4,7 @@ import { initializeBlogs, addblog } from './reducers/blogReducer'
 import { putUser, emptyUser } from './reducers/userReducer'
 import { useSelector, useDispatch } from 'react-redux'
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
+import { Alert, Navbar, Nav } from 'react-bootstrap'
 
 
 
@@ -24,6 +25,9 @@ import SingleUser from './components/SingleUser'
 
 
 const App = () => {
+  const padding = {
+    padding: '10px'
+  }
   const dispatch = useDispatch()
 
   // const [blogs, setBlogs] = useState([])
@@ -33,6 +37,7 @@ const App = () => {
   const errorMessage = useSelector(state => state.notification)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [message, setMessage] = useState(null)
   // const [user, setUser] = useState(null)
   const user = useSelector(state => state.user)
 
@@ -54,7 +59,6 @@ const App = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    console.log('states', username, password)
     try {
       const userObject = await loginService.login({
         username,
@@ -63,9 +67,13 @@ const App = () => {
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(userObject))
       blogService.setToken(userObject.token)
       // setUser(user)
-      dispatch(putUser(userObject))
-      setUsername('')
-      setPassword('')
+      await dispatch(putUser(userObject))
+      setMessage(`welcome ${username}`)
+      setTimeout(() => {
+        setMessage(null)
+        setUsername('')
+        setPassword('')
+      }, 3000)
     } catch (error) {
       // setErrorMessage(error.response.data.error)
       // setTimeout(() => {
@@ -129,7 +137,7 @@ const App = () => {
 
   if (user === null)
     return (
-      <div>
+      <div className="container">
         <h2>Log in to application</h2>
         {errorMessage && <Notification message={errorMessage} />}
         <Togglable buttonLabel='login'>
@@ -145,20 +153,37 @@ const App = () => {
     )
 
   return (
-    <div>
+    <div className="container">
+      {(message &&
+        <Alert variant="success">
+          {message}
+        </Alert>
+      )}
       <Router>
         {errorMessage && <Notification message={errorMessage} />}
-        <div>
-          <Link to='/'>blogs</Link>
-          <Link to='/users'>users</Link>
-          {user.name} logged in{' '}
-          <button id='logout-button' onClick={handleLogout}>
-            log out
-          </button>
-        </div>
-        <Togglable buttonLabel='new blog'>
+        <Navbar style={padding} collapseOnSelect expand="lg" bg="dark" variant="dark">
+          <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+          <Navbar.Collapse id="responsive-navbar-nav">
+            <Nav className="mr-auto">
+              <Nav.Link href="#" as="span">
+                <Link to='/'>blogs</Link>
+              </Nav.Link>
+              <Nav.Link href="#" as="span">
+                <Link to='/users'>users</Link>
+              </Nav.Link>
+              <Nav.Link href="#" as="span">
+                {user.name} logged in{' '}
+                <button id='logout-button' onClick={handleLogout}>
+                  log out
+                </button>
+              </Nav.Link>
+            </Nav>
+          </Navbar.Collapse>
+        </Navbar>
+        <Togglable buttonLabel='create new blog'>
           <BlogForm createBlog={createBlog}/>
         </Togglable>
+        <h3>blog app</h3>
         {/* <h2>Blogs</h2>
         {[...blogs]
           .sort((a, b) => b.likes - a.likes)

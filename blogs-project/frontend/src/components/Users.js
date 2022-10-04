@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { useEffect } from 'react'
 import { putUsers } from '../reducers/usersReducer'
 import { Link } from 'react-router-dom'
+import { Table } from 'react-bootstrap'
 
 
 
@@ -18,14 +19,12 @@ const User = () => {
     return (
       <div>
         <h2>Users</h2>
-        <table>
-          <thead>
-            <tr>
-              <th></th>
-              <th>blogs created</th>
-            </tr>
-          </thead>
+        <Table striped>
           <tbody>
+            <tr>
+              <th>User</th>
+              <th>Blogs created</th>
+            </tr>
             {[...users]
               .map(u => (
                 <tr key={u.id}>
@@ -34,7 +33,7 @@ const User = () => {
                 </tr>
               ))}
           </tbody>
-        </table>
+        </Table>
       </div>
     )
   }
